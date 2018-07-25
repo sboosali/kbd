@@ -1,0 +1,15 @@
+========================================
+Emacs's `kbd`
+
+(kbd "C-x")        ⇒ "\C-x"
+(kbd "C-x C-f")    ⇒ "\C-x\C-f"
+(kbd "C-x 4 C-f")  ⇒ "\C-x4\C-f"
+(kbd "X")          ⇒ "X"
+(kbd "RET")        ⇒ "\^M"
+(kbd "C-c SPC")    ⇒ "\C-c "
+(kbd "<f1> SPC")   ⇒ [f1 32]
+(kbd "C-M-<down>") ⇒ [C-M-down]
+
+https://www.gnu.org/software/emacs/manual/html_node/elisp/Key-Sequences.html
+
+========================================

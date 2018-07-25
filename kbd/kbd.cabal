@@ -270,13 +270,20 @@ library
    --------------------
 
   , spiros
+  , enumerate
+  , enumerate-function
+
+   --------------------
+   -- parsing libraries.
+   --------------------
+
+  , parsers
 
    --------------------
    -- other libraries.
    --------------------
 
-  , ini
-
+  , lens
 
 ----------------------------------------
 -- 
