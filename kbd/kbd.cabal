@@ -1,0 +1,283 @@
+cabal-version:       2.2
+                     -- for indefinite-modules and "common stanzas".
+
+----------------------------------------
+
+name:                kbd
+version:             0.0
+
+-- x-revision:          0
+
+----------------------------------------
+
+synopsis:
+ Parse keysequences (e.g. "C-x b") via multiple syntaxes.
+
+description:
+  Parse keysequences (e.g. "C-x b") into richer types (e.g. @Keys [Key [Control_Modifier] X_Key], [Key [] B_Key]]@) under different syntaxes (e.g. Emacs's @(kbd "...")@ macro, etc).
+  .
+  The package name, @kbd@, comes from:
+  * An abbrevation of "keyboard".
+  * Emacs's @(kbd "...")@: "A key sequence, or key for short, is a sequence of one or more input events that form a unit".
+  * HTML's @<kbd>@: "The HTML Keyboard Input element (<kbd>) represents a span of inline text denoting textual user input from a keyboard".
+
+build-type:          Simple
+
+license:             GPL-3.0-or-later
+license-file:        LICENSE.txt
+copyright:           2018 Spiros Boosalis
+
+author:              Spiros Boosalis
+maintainer:          samboosalis@gmail.com
+
+category:            Accessibility
+stability:           provisional
+
+----------------------------------------
+-- (EXTRA) FILES
+----------------------------------------
+
+data-files:
+  data/*.txt
+
+extra-source-files:
+ LICENSE.txt
+ .gitignore
+ Makefile
+
+----------------------------------------
+-- REPOSITORY
+----------------------------------------
+
+homepage:            http://github.com/sboosali/kbd#readme
+bug-reports:         http://github.com/sboosali/kbd/issues
+
+source-repository head
+  type:     git
+  location: git://github.com/sboosali/kbd.git
+  subdir:   kbd
+
+-- source-repository this
+--   type:     git
+--   location: https://github.com/sboosali/kbd/tree/v0.1
+--   subdir:   kbd
+
+----------------------------------------
+-- FLAGS
+----------------------------------------
+
+-- flag ...
+--   default:     False
+--   description: Enable ...
+--   manual:      True
+
+----------------------------------------
+-- COMMON_STANZAS
+----------------------------------------
+common haskell2020
+
+ default-language:
+   Haskell2010
+
+ ------------------------------
+ ------------------------------
+ ghc-options:
+
+  --------------------
+  -- warning groups
+  --------------------
+
+  -Wall
+
+  --------------------
+  -- disabled warnings
+  --------------------
+
+  -Wno-unticked-promoted-constructors
+
+  --------------------
+  -- enabled warnings
+  --------------------
+
+  -- enable
+  -Wincomplete-uni-patterns
+  -Wincomplete-record-updates
+  -Widentities
+  -Wmissing-methods
+  -fwarn-tabs
+ 
+  --------------------
+  -- typed-holes
+  --------------------
+
+  -- use `typed-holes`, not `undefined`, during development
+
+  -fdefer-typed-holes
+  -Wtyped-holes
+
+  --------------------
+  -- (miscellaneous warnings)
+  --------------------
+
+  -- raise a warning into an error
+  -- -Werror=missing-fields
+
+ if impl(ghc >= 8.0)
+    ghc-options:
+
+        --------------------
+        -- warning groups
+        --------------------     
+
+        -Wcompat
+      
+        --------------------
+        -- enabled warnings
+        --------------------
+
+        -Wnoncanonical-monad-instances
+        -Wnoncanonical-monadfail-instances
+
+ ------------------------------
+ ------------------------------
+
+ default-extensions:
+
+   --------------------
+   -- "controversial"
+   --------------------
+   NoImplicitPrelude
+
+   --------------------
+   -- `deriving`
+   --------------------
+   AutoDeriveTypeable
+   DeriveDataTypeable
+   DeriveGeneric
+   DeriveFunctor
+   DeriveFoldable
+   DeriveTraversable
+   DeriveLift
+   StandaloneDeriving
+
+   --------------------
+   -- syntax
+   --------------------
+   PackageImports
+   LambdaCase
+   EmptyCase
+   TypeOperators
+   PostfixOperators
+   BangPatterns
+   KindSignatures
+   NamedFieldPuns
+   RecordWildCards
+   TupleSections
+   MultiWayIf
+   DoAndIfThenElse
+   EmptyDataDecls
+   InstanceSigs
+   
+   --------------------
+   -- typeclasses
+   --------------------
+   MultiParamTypeClasses
+   FlexibleContexts
+   FlexibleInstances
+   TypeFamilies
+   FunctionalDependencies
+
+   --------------------
+   -- patterns
+   --------------------
+   ViewPatterns
+   PatternSynonyms
+
+   --------------------
+   -- (miscellaneous)
+   --------------------
+   ScopedTypeVariables
+
+ other-extensions:
+
+   --------------------
+   -- macros
+   --------------------
+   TemplateHaskell
+   -- QuasiQuotes
+
+   --------------------
+   -- syntax (of literals)
+   --------------------
+   OverloadedStrings
+   OverloadedLists
+
+   --------------------
+   -- (miscellaneous)
+   --------------------
+
+   -- RebindableSyntax
+   -- kinds:
+   -- DataKinds ConstraintKinds
+   -- harmful to inference:
+   -- GADTs RankNTypes
+   -- (miscellaneous)
+
+----------------------------------------
+-- LIBRARY
+----------------------------------------
+library
+
+ import: haskell2020
+
+ hs-source-dirs:
+  sources
+
+ ------------------------------
+ ------------------------------
+ exposed-modules:
+
+  KeyboardInput.Syntax
+  KeyboardInput.Syntax.Types
+  KeyboardInput.Syntax.Parse
+  KeyboardInput.Syntax.Create
+
+ -- other-modules:
+ --  Paths_kbd
+
+ ------------------------------
+ ------------------------------
+ build-depends:
+
+  --------------------
+  -- boot-libraries,
+  -- standard-library packages,
+  -- "extended" standard-library packages.
+  --------------------
+
+    base >=4.7 && <5
+  , text 
+  , bytestring
+  , transformers
+  , mtl
+  , containers
+  , deepseq
+  , hashable
+  , unordered-containers
+
+   --------------------
+   -- my libraries.
+   --------------------
+
+  , spiros
+
+   --------------------
+   -- other libraries.
+   --------------------
+
+  , ini
+
+
+----------------------------------------
+-- 
+----------------------------------------
