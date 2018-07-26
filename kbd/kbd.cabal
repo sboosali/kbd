@@ -296,6 +296,7 @@ library
    --------------------
 
   , parsers
+  , trifecta
 
    --------------------
    -- other libraries.
