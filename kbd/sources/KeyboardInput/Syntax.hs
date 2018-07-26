@@ -1,8 +1,135 @@
-{-# language GeneralizedNewtypeDeriving #-}
 
 --------------------------------------------------
 
 {-|
+
+
+
+
+
+e.g. keysequences:
+
+@
+
+C-x b
+
+M-%
+M-S-5
+
+M-!
+M-S-1
+
+@
+
+
+
+modifiers. the possible prefixes.
+
+universal modifiers:
+
+@
+
+Control
+"C-"
+
+Alt
+"A-"
+
+Shift
+"S-"
+
+@
+
+
+
+"virtual" modifiers:
+
+@
+
+Meta
+"M-"
+
+Hyper
+"H-"
+
+@
+
+
+keyboard-specific modifiers:
+
+@
+
+the Command key (Apple)
+"D-"
+
+the Win key (Windows)
+"W-"
+
+@
+
+
+
+e.g. numpad keys:
+
+@
+--
+<kp-0>
+…
+<kp-9>
+--
+<kp-next>
+<kp-down>
+<kp-end>
+<kp-home>
+<kp-left>
+<kp-next>
+--
+<kp-add>
+<kp-decimal>
+<kp-delete>
+<kp-divide>
+<kp-down>
+<kp-end>
+@
+
+
+e.g. keys that have capitalized aliases:
+
+@
+ESC a.k.a. <escape>
+TAB a.k.a. <tab>
+DEL a.k.a. <backspace>
+RET a.k.a. <return>
+@
+
+
+e.g. other keys that are specially-named and\/or aliased:
+
+@
+<home>
+<end>
+<insert>
+<delete>
+    
+<prior>
+<next>
+    
+<right>
+<left>
+<up>
+<down>
+    
+<lwindow>
+<rwindow>
+<menu>
+    
+<f1>
+…
+<f12>
+…
+<f20>
+@
+
 
 -}
 
