@@ -32,6 +32,10 @@ maintainer:          samboosalis@gmail.com
 
 category:            Accessibility
 stability:           provisional
+tested-with:
+            GHC == 8.4.3
+            -- `-XDerivingStrategies` requires GHC>=8.2
+--          , GHC == 8.6.2
 
 ----------------------------------------
 -- (EXTRA) FILES
@@ -160,6 +164,10 @@ common haskell2020
    DeriveLift
    StandaloneDeriving
 
+   DerivingStrategies
+   DeriveAnyClass
+   GeneralizedNewtypeDeriving
+
    --------------------
    -- syntax
    --------------------
@@ -233,11 +241,8 @@ library
  hs-source-dirs:
   sources
 
- ------------------------------
- ------------------------------
- signatures:
-
-  KEYBOARD
+--TODO: signatures break repl.
+ -- signatures
 
  ------------------------------
  ------------------------------
@@ -250,6 +255,13 @@ library
 
  -- other-modules:
  --  Paths_kbd
+
+ ------------------------------
+ ------------------------------
+
+--TODO: signatures break repl.
+ -- signatures:
+ --  KEYBOARD
 
  ------------------------------
  ------------------------------

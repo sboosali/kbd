@@ -10,6 +10,8 @@
 -}
 module KeyboardInput.Syntax.Parse where
 
+import KeyboardInput.Syntax.Types
+
 --------------------------------------------------
 
 import "spiros" Prelude.Spiros
@@ -19,5 +21,14 @@ import "spiros" Prelude.Spiros
 {-| 
 
 -}
+
+--keysequence :: [Keychord] -> Keysequence
+
+--keychord :: [Modifier] -> Key -> Keychord
+
+
+
+
+
 
 --------------------------------------------------

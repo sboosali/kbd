@@ -196,14 +196,14 @@ e.g.
 ==================================================
 == `deriving` templates
 
--- nullary type (default)
+-- "default" (i.e. nullary) type
 deriving (Show,Read,Eq,Ord,Lift,Generic,NFData,Hashable)
 
 -- enum-like
-deriving (Show,Read,Eq,Ord,Enum,Bounded,Lift,Generic,NFData,Hashable)
+deriving (Show,Read,Eq,Ord,Enum,Bounded,Ix,Lift,Generic,NFData,Hashable)
 
--- unary type
-deriving (Show,Read,Eq,Ord,Functor,Foldable,Traversable,Generic,NFData,Hashable)
+-- functor (i.e. unary) type
+deriving (Show,Read,Eq,Ord,Functor,Foldable,Traversable,Generic,Generic1,NFData,Hashable)
 
 -- string-like
 newtype STRINGTYPE = STRINGTYPE String
@@ -213,5 +213,21 @@ newtype STRINGTYPE = STRINGTYPE String
 newtype LISTTYPE   = LISTTYPE [ITEMTYPE]
  deriving (Show,Read,Eq,Ord,Lift,Generic,NFData,Hashable,Semigroup,Monoid,IsList)
 
-==================================================
+-- numeric type (number-like)
+newtype NUMBERTYPE = NUMBERTYPE Natural
+ deriving (Show,Read,Eq,Ord,Lift,Generic,NFData,Hashable,Num,Real,Enum,Ix,Bits)
 
+==================================================
+-XDerivingStrategies
+
+{-# LANGUAGE DerivingStrategies         #-}
+{-# LANGUAGE DeriveAnyClass             #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
+data ...
+ deriving          (...)
+ deriving stock    (...)
+ deriving newtype  (...)
+ deriving anyclass (...)
+
+==================================================

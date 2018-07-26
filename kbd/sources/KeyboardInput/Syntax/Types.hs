@@ -1,11 +1,14 @@
 {-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE RecordWildCards       #-}
 
-{-# LANGUAGE DeriveAnyClass        #-}
+{-# LANGUAGE DeriveAnyClass             #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DerivingStrategies         #-}
 
 --------------------------------------------------
 
 {-|
+
+
 
 -}
 module KeyboardInput.Syntax.Types where
@@ -16,401 +19,21 @@ import "spiros" Prelude.Spiros
 
 --------------------------------------------------
 
-{-| 
-
--}
-data DeviceConfig a = DeviceConfig
- { numberOfKeys :: KeyCount
- , config       :: DeviceConfig'
- , keys         :: [KeyConfig a]
- }
-
---------------------------------------------------
-
-{-| The "keypad properties" that configure the device as a whole.
-
--}
-data DeviceConfig' = DeviceConfig'
- { rollover :: KeyRollover
- , pacing   :: CharacterPacing
- , modes    :: LEDModes
- }
-
---------------------------------------------------
-
-{-| This many keys may be pressed down simultaneously.
-
-e.g. @KeyRollover 3@ means:
-Two keys, or three keys, may be pressed down simultaneously. 
-(Trivially, one key may always be pressed down "simultaneously")
-
--}
-newtype KeyRollover = KeyRollover
- { fromKeyRollover ::
-   Natural
- }
-
-{-| Two keys.
-
--}
-defaultKeyRollover :: KeyRollover
-defaultKeyRollover = KeyRollover 2
-
---------------------------------------------------
-
-{-| Time between characters, in milliseconds.
-
-e.g. @CharacterPacing 2@ means:
-After each keypress 'Event' (i.e. a 'KeyEvent' or 'ModifierEvent'),
-wait two milliseconds before the next event.
-
--}
-newtype CharacterPacing = CharacterPacing
- { fromCharacterPacing ::
-   Natural
- }
-
-{-| Two milliseconds.
-
--}
-defaultCharacterPacing :: CharacterPacing
-defaultCharacterPacing = CharacterPacing 2
-
-----------------------------------------
-
-{-| 
-
--}
-data LEDModes = LEDModes
- { first  :: LEDMode
- , second :: LEDMode
- , third  :: LEDMode
- }
-
-----------------------------------------
-
-{-| 
-
--}
-data LEDMode
-
- = LEDNotUsed
- | LEDCapsLock
- | LEDNumLock
- | LEDScrollLock
- | LEDLevelIndicator
- | LEDPowerIndicator
- | LEDControlByHostOrMacro
-
- deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
-
-defaultLEDMode :: LEDMode
-defaultLEDMode = LEDNotUsed
-
---------------------------------------------------
-
-{-| How many keys does the keypad have?
-
--}
-data KeyCount
-  = CP24 -- ^ the @"Genovation ControlPad CP24"@.
-  | CP48 -- ^ the @"Genovation ControlPad CP48"@.
-
- deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
-
---------------------------------------------------
-
-{-| Keys are identified by their position on the grid,
-in the expected (for western languages) reading order,
-i.e. left-to-right then top-to-bottom.
-
-The 'CP48' uses all fourty-eight; while
-the 'CP24' uses the first twenty-four.
-
-This type is equivalent to the set of these numbers:
-
-@
-{0, 1, 2, ... 46, 47}
-@
-
--}
-data KeyName
-
-  = Key00
-  | Key01
-  | Key02
-  | Key03
-  | Key04
-  | Key05
-  | Key06
-  | Key07
-  | Key08
-  | Key09
-  | Key10
-  | Key11
-  | Key12
-  | Key13
-  | Key14
-  | Key15
-  | Key16
-  | Key17
-  | Key18
-  | Key19
-  | Key20
-  | Key21
-  | Key22
-  | Key23
-  | Key24
-  | Key25
-  | Key26
-  | Key27
-  | Key28
-  | Key29
-  | Key30
-  | Key31
-  | Key32
-  | Key33
-  | Key34
-  | Key35
-  | Key36
-  | Key37
-  | Key38
-  | Key39
-  | Key40
-  | Key41
-  | Key42
-  | Key43
-  | Key44
-  | Key45
-  | Key46
-  | Key47
-
-  deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
-
---------------------------------------------------
-
-{-| 
-
--}
-data KeyConfig a = KeyConfig
- { name             :: KeyName
- , level            :: Level
- , config           :: KeyConfig' a
- }
-
---------------------------------------------------
-
-{-| 
-
--}
-data Level
- = Level1
- | Level2
-
- deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
-
---------------------------------------------------
-
-{-| 
-
--}
-data KeyConfig' a = KeyConfig'
- { mode             :: EventsMode
- , repetition       :: AutoRepeat
- , events           :: Events
- , description      :: a
- }
-
---------------------------------------------------
-
-{-| 
-
--}
-data AutoRepeat
- = AutoRepeatYes
- | AutoRepeatNo
-
- deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
-
---------------------------------------------------
-
-{-| 
-
--}
-data EventsMode
- = AutoSenseMode
- | SeparateUpCodesMode
- | MacroModeAdvanced
- | LiteralModeAdvanced
-
- deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
-
-defaultEventsMode :: EventsMode
-defaultEventsMode = AutoSenseMode
-
---------------------------------------------------
-
-{-| 
-
--}
-newtype Events = Events { fromEvents :: 
- [Event]
- }
-
---------------------------------------------------
-
 {-|
 
-* A key event, sent by the device to the computer.
-* A modifier event, sent by the device to the computer.
-Modifiers are "held" by sandwiching other 'Event's between 
-pressing it ('PressDown') and releasing it ('ReleaseUp') only after.
-* Delay (for example, by some hundreds of milliseconds) before sending other 'Event's. 
-(currently, the only "command" or "pseudo-event").
-
 -}
-data Event
- = KeyEvent      Key
- | ModifierEvent ModifierToggle
- | ActionEvent   Action
+newtype ActionSequence = ActionSequence
 
---------------------------------------------------
+  [Action]
 
-{-| Modifier-keys' events, unlike other keys' events,
-have an explicit 'Direction'.
+  deriving stock    (Show,Read,Lift,Generic)
+  deriving newtype  (Eq,Ord,Semigroup,Monoid,NFData,Hashable)
+  -- deriving anyclass (IsList)
 
--}
-data ModifierToggle = ModifierToggle
- { direction :: Direction
- , modifier  :: Modifier
- }
-
---------------------------------------------------
-
-{-| The modifier keys of the device's "generic keyboard" representation.
-
--}
-data Modifier
-
- = ModifierCtrl
- | ModifierAlt
- | ModifierShift
- | ModifierWin
-
- | ModifierRightCtrl 
- | ModifierRightAlt
- | ModifierRightShift
-
- deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
-
---------------------------------------------------
-
-{-| 
-
--}
-data Direction
- = PressDown
- | ReleaseUp
-
- deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
-
---------------------------------------------------
-
-{-| The (non-modifier) keys of the device's "generic keyboard" representation.
-
--}
-data Key
-
- = KeyA
- | KeyB
- | KeyC
- | KeyD
- | KeyE
- | KeyF
- | KeyG
- | KeyH
- | KeyI
- | KeyJ
- | KeyK
- | KeyL
- | KeyM
- | KeyN
- | KeyO
- | KeyP
- | KeyQ
- | KeyR
- | KeyS
- | KeyT
- | KeyU
- | KeyV
- | KeyW
- | KeyX
- | KeyY
- | KeyZ
-
- | KeyControl
- | KeyCapsLock
- | KeyShift
- | KeyOption
- | KeyFunction
-
- | KeyGrave
- | KeyMinus
- | KeyEqual
- | KeyDelete
- | KeyForwardDelete
- | KeyLeftBracket
- | KeyRightBracket
- | KeyBackslash
- | KeySemicolon
- | KeyQuote
- | KeyComma
- | KeyPeriod
- | KeySlash
-
- | KeyTab
- | KeySpace
- | KeyReturn
-
- | KeyLeftArrow
- | KeyRightArrow
- | KeyDownArrow
- | KeyUpArrow
-
- | KeyZero
- | KeyOne
- | KeyTwo
- | KeyThree
- | KeyFour
- | KeyFive
- | KeySix
- | KeySeven
- | KeyEight
- | KeyNine
-
- | KeyEscape
- | KeyF1
- | KeyF2
- | KeyF3
- | KeyF4
- | KeyF5
- | KeyF6
- | KeyF7
- | KeyF8
- | KeyF9
- | KeyF10
- | KeyF11
- | KeyF12
- | KeyF13
- | KeyF14
- | KeyF15
- | KeyF16
- | KeyF17
- | KeyF18
- | KeyF19
- | KeyF20
-
- deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
+instance IsList ActionSequence where
+  type Item ActionSequence = Action
+  fromList = coerce
+  toList   = coerce
 
 --------------------------------------------------
 
@@ -418,162 +41,107 @@ data Key
 
 -}
 data Action
- = DelayAction Delay
+
+  = PressAction  KeyChord
+  | InsertAction String
+  | DelayAction  Milliseconds
+
+  deriving stock    (Show,Read,Eq,Ord,Lift,Generic)
+  deriving anyclass (NFData,Hashable)
 
 --------------------------------------------------
 
 {-|
 
-This type is equivalent to the set of these numbers:
-
-@
-{4, 8, 12, ... 496, 500}
-@
-
 -}
-data Delay
+newtype Milliseconds = Milliseconds
 
- = Delay004ms
- | Delay008ms
- | Delay012ms
- | Delay016ms
- | Delay020ms
- | Delay024ms
- | Delay028ms
- | Delay032ms
- | Delay036ms
- | Delay040ms
- | Delay044ms
- | Delay048ms
- | Delay052ms
- | Delay056ms
- | Delay060ms
- | Delay064ms
- | Delay068ms
- | Delay072ms
- | Delay076ms
- | Delay080ms
- | Delay084ms
- | Delay088ms
- | Delay092ms
- | Delay096ms
- | Delay100ms
- | Delay104ms
- | Delay108ms
- | Delay112ms
- | Delay116ms
- | Delay120ms
- | Delay124ms
- | Delay128ms
- | Delay132ms
- | Delay136ms
- | Delay140ms
- | Delay144ms
- | Delay148ms
- | Delay152ms
- | Delay156ms
- | Delay160ms
- | Delay164ms
- | Delay168ms
- | Delay172ms
- | Delay176ms
- | Delay180ms
- | Delay184ms
- | Delay188ms
- | Delay192ms
- | Delay196ms
- | Delay200ms
- | Delay204ms
- | Delay208ms
- | Delay212ms
- | Delay216ms
- | Delay220ms
- | Delay224ms
- | Delay228ms
- | Delay232ms
- | Delay236ms
- | Delay240ms
- | Delay244ms
- | Delay248ms
- | Delay252ms
- | Delay256ms
- | Delay260ms
- | Delay264ms
- | Delay268ms
- | Delay272ms
- | Delay276ms
- | Delay280ms
- | Delay284ms
- | Delay288ms
- | Delay292ms
- | Delay296ms
- | Delay300ms
- | Delay304ms
- | Delay308ms
- | Delay312ms
- | Delay316ms
- | Delay320ms
- | Delay324ms
- | Delay328ms
- | Delay332ms
- | Delay336ms
- | Delay340ms
- | Delay344ms
- | Delay348ms
- | Delay352ms
- | Delay356ms
- | Delay360ms
- | Delay364ms
- | Delay368ms
- | Delay372ms
- | Delay376ms
- | Delay380ms
- | Delay384ms
- | Delay388ms
- | Delay392ms
- | Delay396ms
- | Delay400ms
- | Delay404ms
- | Delay408ms
- | Delay412ms
- | Delay416ms
- | Delay420ms
- | Delay424ms
- | Delay428ms
- | Delay432ms
- | Delay436ms
- | Delay440ms
- | Delay444ms
- | Delay448ms
- | Delay452ms
- | Delay456ms
- | Delay460ms
- | Delay464ms
- | Delay468ms
- | Delay472ms
- | Delay476ms
- | Delay480ms
- | Delay484ms
- | Delay488ms
- | Delay492ms
- | Delay496ms
- | Delay500ms
+  Natural
 
- deriving (Show,Read,Eq,Ord,Enum,Bounded,Generic,NFData,Hashable)
+  deriving stock    (Show,Read,Lift,Generic)
+  deriving newtype  (Num,Real,Enum,Ix,Bits,Eq,Ord)
+  deriving newtype  (NFData,Hashable)
+
+-- | Addition.
+instance Semigroup Milliseconds where
+  (<>) = coerce ((+) :: Natural -> Natural -> Natural)
+
+-- | Zero.
+instance Monoid Milliseconds where
+  mempty = Milliseconds 0
 
 --------------------------------------------------
 
--- newtype KeyCount = KeyCount { fromKeyCount ::
---  Natural
---  }
+{-|
 
--- newtype KeyName = KeyName { fromKeyName ::
---  Natural
---  }
+-}
+data KeyBinding a = KeyBinding
+ { sequence :: KeySequence
+ , action   :: a
+ }
+ deriving stock    (Functor,Foldable,Traversable,Show,Read,Eq,Ord,Lift,Generic,Generic1)
+ deriving anyclass (NFData,Hashable)
 
+--------------------------------------------------
 
--- describeDevice :: KeyCount -> Text
--- describeDevice = \case
---   KeyCount 24 -> "Genovation ControlPad CP24"
---   KeyCount 48 -> "Genovation ControlPad CP48"
---   KeyCount _  -> ""
+{-|
+
+-}
+newtype KeySequence = KeySequence
+
+  [KeyChord]
+
+  deriving stock    (Show,Read,Lift,Generic)
+  deriving newtype  (Eq,Ord,Semigroup,Monoid,NFData,Hashable)
+  -- deriving anyclass (IsList)
+
+instance IsList KeySequence where
+  type Item KeySequence = KeyChord
+  fromList = coerce
+  toList   = coerce
+
+--------------------------------------------------
+
+{-|
+
+-}
+data KeyChord = KeyChord
+  { modifiers :: [Modifier] -- Set
+  , key       :: Key
+  }
+  deriving          (Show,Read,Eq,Ord,Lift,Generic)
+  deriving anyclass (NFData,Hashable)
+
+--------------------------------------------------
+
+{-|
+
+-}
+newtype Modifier = Modifier
+
+  String
+
+  deriving stock    (Show,Read,Lift,Generic)
+  deriving newtype  (Eq,Ord,Semigroup,Monoid,NFData,Hashable)
+  -- deriving anyclass (IsString)
+
+instance IsString Modifier where
+  fromString = coerce
+
+--------------------------------------------------
+
+{-|
+
+-}
+newtype Key = Key
+
+  String
+
+  deriving stock    (Show,Read,Lift,Generic)
+  deriving newtype  (Eq,Ord,Semigroup,Monoid,NFData,Hashable)
+  -- deriving anyclass (IsString)
+
+instance IsString Key where
+  fromString = coerce
+
+--------------------------------------------------
