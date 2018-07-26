@@ -251,6 +251,7 @@ library
   KeyboardInput.Syntax
   KeyboardInput.Syntax.Types
   KeyboardInput.Syntax.Parse
+  KeyboardInput.Syntax.Config
   KeyboardInput.Syntax.Create
 
  -- other-modules:

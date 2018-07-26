@@ -1,7 +1,4 @@
-{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE RecordWildCards       #-}
-
-{-# LANGUAGE DeriveAnyClass        #-}
 
 --------------------------------------------------
 
@@ -13,6 +10,8 @@ module KeyboardInput.Syntax.Parse where
 --------------------------------------------------
 
 import KeyboardInput.Syntax.Types
+
+import KeyboardInput.Syntax.Config
 
 --------------------------------------------------
 
@@ -32,10 +31,18 @@ import "spiros" Prelude.Spiros
 
 {-| Parse an arbitrary key sequence.
 
+@
+parseKeySequence = 'parseKeySequenceWith' 'defaultConfig'
+@
+
+==
+
 Modifiers are grouped only by hyphenation:
 
 >>> parseKeySequence "C-x b"
 Right (KeySequence [KeyChord { modifiers = [Modifier "C"], key = Key "x" }, KeyChord { modifiers = [], key = Key "b" } ])
+
+==
 
 The keys and modifiers may be arbitrary characters or strings:
 
@@ -46,15 +53,15 @@ Right (KeySequence [KeyChord { modifiers = [], key = Key "o" },KeyChord { modifi
 
 -}
 parseKeySequence :: String -> Either String KeySequence
-parseKeySequence = _
+parseKeySequence = parseKeySequenceWith defaultConfig
 
 --------------------------------------------------
 
 {-| 
 
 -}
-
-
+parseKeySequenceWith :: Config -> String -> Either String KeySequence
+parseKeySequenceWith Config{..} = todo
 
 --------------------------------------------------
 

@@ -149,13 +149,14 @@ import KeyboardInput.Syntax.Create
 --------------------
 
 import "spiros" Prelude.Spiros hiding (Text)
+--import "spiros" Prelude.Spiros hiding (Text)
 
 --TODO different subsets of re-exports (like one without text).
 --TODO signatures for both Text-versus-String-versus-Bytestring and Lazy-versus-Strict.
 
 --------------------
 
-import "text" Data.Text (Text)
+--import "text" Data.Text (Text)
 
 --------------------
 

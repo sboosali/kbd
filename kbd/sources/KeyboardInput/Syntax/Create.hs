@@ -1,7 +1,4 @@
-{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE RecordWildCards       #-}
-
-{-# LANGUAGE DeriveAnyClass        #-}
 
 --------------------------------------------------
 
@@ -9,6 +6,8 @@
 
 -}
 module KeyboardInput.Syntax.Create where
+
+import KeyboardInput.Syntax.Types
 
 --------------------------------------------------
 
