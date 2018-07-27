@@ -1,9 +1,5 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 
-{-# LANGUAGE DeriveAnyClass             #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DerivingStrategies         #-}
-
 --------------------------------------------------
 
 {-|
@@ -12,6 +8,8 @@
 
 -}
 module KeyboardInput.Syntax.Types where
+
+import Internal.KeyboardInput.Milliseconds
 
 --------------------------------------------------
 
@@ -48,27 +46,6 @@ data Action
 
   deriving stock    (Show,Read,Eq,Ord,Lift,Generic)
   deriving anyclass (NFData,Hashable)
-
---------------------------------------------------
-
-{-|
-
--}
-newtype Milliseconds = Milliseconds
-
-  Natural
-
-  deriving stock    (Show,Read,Lift,Generic)
-  deriving newtype  (Num,Real,Enum,Ix,Bits,Eq,Ord)
-  deriving newtype  (NFData,Hashable)
-
--- | Addition.
-instance Semigroup Milliseconds where
-  (<>) = coerce ((+) :: Natural -> Natural -> Natural)
-
--- | Zero.
-instance Monoid Milliseconds where
-  mempty = Milliseconds 0
 
 --------------------------------------------------
 

@@ -254,8 +254,10 @@ library
   KeyboardInput.Syntax.Config
   KeyboardInput.Syntax.Create
 
- -- other-modules:
- --  Paths_kbd
+ other-modules:
+  Internal.KeyboardInput.Milliseconds
+  Internal.KeyboardInput.Tokens
+-- Paths_kbd
 
  ------------------------------
  ------------------------------
