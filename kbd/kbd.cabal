@@ -273,18 +273,19 @@ library
  ------------------------------
  build-depends:
 
+   --------------------
+  -- boot-libraries & standard-library packages,
   --------------------
-  -- boot-libraries,
-  -- standard-library packages,
-  -- "extended" standard-library packages.
-  --------------------
-
-    base >=4.7 && <5
-  , text 
+    base >=4.10 && <5
+  , text
   , bytestring
   , transformers
   , mtl
   , containers
+
+  --------------------
+  -- extended(/unofficial) "standard-library" packages.
+  --------------------
   , deepseq
   , hashable
   , unordered-containers
@@ -292,7 +293,6 @@ library
    --------------------
    -- my libraries.
    --------------------
-
   , spiros
   , enumerate
   , enumerate-function
@@ -300,16 +300,21 @@ library
    --------------------
    -- parsing libraries.
    --------------------
-
   , parsers
   , trifecta
   , charset
 
    --------------------
-   -- other libraries.
+   -- records libraries.
    --------------------
-
   , lens
+  , generic-lens
+  , vinyl
+
+   --------------------
+   -- (miscellaneous libraries).
+   --------------------
+--  , 
 
 ----------------------------------------
 -- 

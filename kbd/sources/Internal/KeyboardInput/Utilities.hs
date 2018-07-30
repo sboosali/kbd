@@ -8,12 +8,14 @@ module Internal.KeyboardInput.Utilities where
 
 --------------------------------------------------
 
+import qualified "trifecta" Text.Trifecta.Result    as T
+
 import qualified "parsers"  Text.Parser.Combinators as P
 import qualified "parsers"  Text.Parser.Char        as P
-import qualified "parsers"  Text.Parser.Token       as P
+--import qualified "parsers"  Text.Parser.Token       as P
 
 import           "parsers"  Text.Parser.Char        (CharParsing)
-import           "parsers"  Text.Parser.Token       (TokenParsing)
+--import           "parsers"  Text.Parser.Token       (TokenParsing)
 
 --import qualified "charset" Data.CharSet as CharSet
 
@@ -48,3 +50,6 @@ pWhitespace :: CharParsing p => p ()
 pWhitespace = P.space *> P.spaces
 
 --------------------------------------------------
+
+result2either :: T.Result a -> Either String a
+result2either = T.foldResult (show > Left) Right

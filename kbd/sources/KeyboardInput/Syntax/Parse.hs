@@ -4,6 +4,8 @@
 
 {-|
 
+>>> pActionSequence
+
 -}
 module KeyboardInput.Syntax.Parse where
 
@@ -11,7 +13,7 @@ module KeyboardInput.Syntax.Parse where
 
 import Internal.KeyboardInput.Utilities
 import Internal.KeyboardInput.Milliseconds
-import Internal.KeyboardInput.Tokens
+--import Internal.KeyboardInput.Tokens
 
 import KeyboardInput.Syntax.Types
 
@@ -41,6 +43,11 @@ import qualified "base" Data.Char as Char
 import "spiros" Prelude.Spiros
 
 --------------------------------------------------
+
+-- |
+parseKeySequenceIO :: String -> IO ()
+parseKeySequenceIO
+  = T.parseTest pEOFKeySequence
 
 {-| Parse an arbitrary key sequence.
 
@@ -74,7 +81,9 @@ parseKeySequence = parseKeySequenceWith defaultConfig
 
 -}
 parseKeySequenceWith :: Config -> String -> Either String KeySequence
-parseKeySequenceWith Config{..} = todo
+parseKeySequenceWith Config{..}
+  = T.parseString pEOFKeySequence mempty
+  > result2either
 
 --------------------------------------------------
 
@@ -85,28 +94,90 @@ parseKeySequenceWith Config{..} = todo
 -- parseActionSequence = _
 
 
+{-| Parse an arbitrary key-or-action sequence. See 'parseKeySequence'.
+
+@
+parseActionSequence = 'parseActionSequenceWith' 'defau+ltConfig'
+@
+
+==
+
+>>> parseActionSequence "C-x b 100ms \"*shell*\" RET"
+Right (ActionSequence [PressAction (KeyChord { modifiers = [Modifier "C"], key = Key "x" }),PressAction (KeyChord { modifiers = [], key = Key "b" }),DelayAction (Milliseconds 100),InsertAction ",PressAction (KeyChord { modifiers = [], key = Key "RET" })])
+
+-}
+parseActionSequence :: String -> Either String ActionSequence
+parseActionSequence = parseActionSequenceWith defaultConfig
+
+-- |
+parseActionSequenceIO :: String -> IO ()
+parseActionSequenceIO
+  = T.parseTest pEOFActionSequence
+
+-- parseActionSequenceIO :: String -> String -> IO ()
+-- parseActionSequenceIO title input
+--     = T.parseTest pActionSequence title input
+--   <&> result2either
+
 --------------------------------------------------
 
 {-| 
 
 -}
-
-
+parseActionSequenceWith :: Config -> String -> Either String ActionSequence
+parseActionSequenceWith Config{..}
+  = T.parseString pEOFActionSequence mempty
+  > result2either
 
 --------------------------------------------------
 
+{-| 
+
+-}
+pEOFKeySequence :: forall p. TokenParsing p => p KeySequence
+pEOFKeySequence = p
+  where
+  p = pKeySequence <* P.eof
+
+--------------------------------------------------
+
+
+{-| 
+
+-}
+pEOFActionSequence :: forall p. TokenParsing p => p ActionSequence
+pEOFActionSequence = p
+  where
+  p = pActionSequence <* P.eof
+
+--------------------------------------------------
+
+pActionSequence :: forall p. TokenParsing p => p ActionSequence
 pActionSequence = ActionSequence
- <$> sepByWhitespace pAction
+ <$> some pAction
+
+-- pActionSequence = ActionSequence
+--  <$> (pAction `P.sepBy` P.space)
 
 --------------------------------------------------
 
+pAction :: forall p. TokenParsing p => p Action
 pAction
-   = PressAction  <$> pKeyChord
- <|> DelayAction  <$> pDelay
- <|> InsertAction <$> pInsertion
+   = empty
+ <|> P.token (P.try (DelayAction  <$> pDelay))
+ <|>          P.try (InsertAction <$> pInsertion)
+ <|> P.token (P.try (PressAction  <$> pKeyChord))
 
   -- NOTE:
   -- pKeyChord must precede pDelay, since a single (unitlees) digit represents the corresponding key (e.g. the @1 / !@ key), and a digit is a prefix-string of a number (which is several digits).
+
+
+
+-- pAction
+--    = empty
+--  <|> P.try (DelayAction  <$> pDelay)
+--  <|> P.try (InsertAction <$> pInsertion)
+--  <|> P.try (PressAction  <$> pKeyChord)
 
 --------------------------------------------------
 
@@ -138,8 +209,8 @@ pDelay = pMilliseconds
 
 pTimeUnit :: CharParsing p => p TimeUnit
 pTimeUnit
-    = MillisecondsUnit <$ "ms"
-  <|> SecondsUnit      <$ "s"
+    = MillisecondsUnit <$ P.string "ms"
+  <|> SecondsUnit      <$ P.string "s"
 
 --------------------------------------------------
 
@@ -147,12 +218,36 @@ pTimeUnit
 --
 -- e.g. @"\"- sboo\""@
 --
-pInsertion :: TokenParsing p => p ()
-pInsertion = P.stringLiteral
+
+pInsertion :: TokenParsing p => p String
+pInsertion =
+  P.stringLiteral
+  
+-- pInsertion :: TokenParsing p => p String
+-- pInsertion = P.stringLiteral
 
 -- pInsertion :: CharParsing p => p ()
 -- pInsertion =  
---  P.between "\"" pPhrase "\""
+--  P.between "\"" "\"" pPhrase
+
+-- pInsertion :: CharParsing p => p String
+-- pInsertion =
+--   pPhrase `P.surroundedBy` (P.char '"')
+
+--------------------------------------------------
+
+--
+-- e.g. @"- sboo"@
+--
+pPhrase :: CharParsing p => p String
+pPhrase = go
+
+ where
+ go =
+   some pNonQuote
+
+ pNonQuote = --TODO escaping
+  P.noneOfSet (CharSet.singleton '"')
 
 --------------------------------------------------
 
@@ -169,7 +264,7 @@ pKeySequence
 -- | 
 pKeyChord :: CharParsing p => p KeyChord
 pKeyChord = KeyChord
- <$> pModifier `P.sepBy` (P.char '-') --TODO parameter or signature.
+ <$> P.try (pModifier `P.endBy` (P.char '-')) --TODO parameter or signature.
  <*> pKey
 
 --------------------------------------------------
@@ -192,9 +287,9 @@ pKey
   = Key <$> go
 
   where
-  go = pKeyThreeLetterAbbreviation
-   <|> pKeyThreeLetterAbbreviation
-   <|> pKeySingleCharacter
+  go = P.try pKeyBracketedString
+   <|> P.try pKeyThreeLetterAbbreviation
+   <|> P.try pKeySingleCharacter
 
 --------------------------------------------------
 
@@ -210,17 +305,20 @@ pKeyThreeLetterAbbreviation =
 -- | e.g. @"<return>"@
 pKeyBracketedString :: CharParsing p => p String
 pKeyBracketedString
- = P.between (P.string "<") pWord (P.string ">")
+ = P.between (P.string "<") (P.string ">") pBracketableWord
 
 --------------------------------------------------
 
 -- | e.g. @"return"@ or @"kp-return"@.
-pWord :: CharParsing p => p String
-pWord
- = char2string <$> go
+pBracketableWord :: CharParsing p => p String
+pBracketableWord
+ = go
 
  where
  go =
+   some pAlphanumericOrSeparator
+
+ pAlphanumericOrSeparator =
    P.oneOfSet alphanumericOrSeparator
 
  alphanumericOrSeparator = 
