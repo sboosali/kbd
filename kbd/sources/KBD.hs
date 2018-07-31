@@ -15,32 +15,32 @@ emacs_switch_buffer
 
 global_transfer_text_between_windows :: Either String 'ActionSequence'
 global_transfer_text_between_windows
- = 'kbd' "C-c A-<tab> 100ms C-v \"\n\n\" 100ms A-<tab>"
+ = 'kbd' "C-c A-\<tab\> 100ms C-v \"\n\n\" 100ms A-\<tab\>"
 @
 
 
 Doctests:
 
 @
->>> kbd "C-c A-<tab> 100ms C-v \"\\n\\n\" 100ms A-<tab>"
-ActionSequence [PressAction (KeyChord {modifiers = [Modifier "C"], key = Key "c"}),PressAction (KeyChord {modifiers = [Modifier "A"], key = Key "tab"}),DelayAction (Milliseconds 100),PressAction (KeyChord {modifiers = [Modifier "C"], key = Key "v"}),InsertAction "\n\n",DelayAction (Milliseconds 100),PressAction (KeyChord {modifiers = [Modifier "A"], key = Key "tab"})]
+>>> kbd "C-c A-\<tab\> 100ms C-v \"\\n\\n\" 100ms A-\<tab\>"
+ActionSequence [PressAction (KeyChord {modifiers = [Modifier \"C\"], key = Key "c"}),PressAction (KeyChord {modifiers = [Modifier \"A\"], key = Key "tab"}),DelayAction (Milliseconds 100),PressAction (KeyChord {modifiers = [Modifier \"C\"], key = Key "v"}),InsertAction "\n\n",DelayAction (Milliseconds 100),PressAction (KeyChord {modifiers = [Modifier \"A\"], key = Key "tab"})]
 @
 
 i.e., with the output pretty-printed:
 
 @
 ActionSequence
- [ 'PressAction' ('KeyChord' { 'modifiers' = ['Modifier' "C"]
+ [ 'PressAction' ('KeyChord' { 'modifiers' = ['Modifier' \"C\"]
                          , 'key'       = 'Key' "c"
                          })
 
- , 'PressAction' ('KeyChord' { 'modifiers' = ['Modifier' "A"]
+ , 'PressAction' ('KeyChord' { 'modifiers' = ['Modifier' \"A\"]
                          , 'key'       = 'Key' "tab"
                          })
 
  , 'DelayAction' 100
 
- , 'PressAction' ('KeyChord' { 'modifiers' = ['Modifier' "C"]
+ , 'PressAction' ('KeyChord' { 'modifiers' = ['Modifier' \"C\"]
                          , 'key'       = 'Key' "v"
                          })
 
@@ -48,7 +48,7 @@ ActionSequence
 
  , 'DelayAction' 100
 
- , 'PressAction' ('KeyChord' { 'modifiers' = ['Modifier' "A"]
+ , 'PressAction' ('KeyChord' { 'modifiers' = ['Modifier' \"A\"]
                          , 'key'       = 'Key' "tab"
                          })
  ]

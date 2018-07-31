@@ -1,5 +1,6 @@
 ----------------------------------------
 packages:
+
  ./kbd
 
 ----------------------------------------
@@ -9,6 +10,11 @@ optional-packages:
 
  ../enumerate/enumerate
  ../enumerate/enumerate-function
+
+----------------------------------------
+
+documentation:            True
+haddock-hyperlink-source: True
 
 ----------------------------------------
 

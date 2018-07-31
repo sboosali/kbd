@@ -45,10 +45,33 @@ tags: compile
 	cat ".sboo/tags"
 
 ########################
-docs: compile
-	cabal new-haddock 
+build-docs: compile
+	cabal new-haddock all
+
+########################
+copy-docs: build-docs
+	rm -fr ".sboo/documentation/"
+	mkdir -p ".sboo/documentation/"
+	cp -aRv  ./dist-newstyle/build/*-*/ghc-*/kbd-*/noopt/doc/html/kbd/* ".sboo/documentation/"
+
+########################
+open-docs: copy-docs
+	xdg-open ".sboo/documentation/index.html"
+
+#       ^ TODO: cross-platform, use 'open' and alias it to 'xdg-open'; wildcard the platform-directory (and also the various versions), i.e.:
+#
+#           open ./dist-newstyle/build/*-*/ghc-*/*-*/noopt/doc/html/*/index.html
+#       rather than, e.g.:
+#
+#           xdg-open ./dist-newstyle/build/x86_64-linux/ghc-8.4.3/kbd-0.0/noopt/doc/html/kbd/index.html
+#
+
+# ekmett:
 # 	cp -aRv dist-newstyle/build/*/*/unpacked-containers-0/doc/html/unpacked-containers/* docs
 # 	cd docs && git commit -a -m "update haddocks" && git push && cd ..
+
+########################
+docs: open-docs
 
 ####################
 update:
