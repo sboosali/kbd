@@ -136,6 +136,7 @@ module KeyboardInput.Syntax
  ( module KeyboardInput.Syntax.Types
  , module KeyboardInput.Syntax.Parse
  , module KeyboardInput.Syntax.Create
+ , module KeyboardInput.Syntax.Config
  -- , module KeyboardInput.Syntax
  ) where
 
@@ -144,6 +145,8 @@ module KeyboardInput.Syntax
 import KeyboardInput.Syntax.Types
 import KeyboardInput.Syntax.Parse
 import KeyboardInput.Syntax.Create
+import KeyboardInput.Syntax.Config
+-- import KeyboardInput.Syntax
 
 --------------------
 

@@ -11,6 +11,7 @@ module KeyboardInput.Syntax.Parse where
 
 --------------------------------------------------
 
+import Internal.Trifecta
 import Internal.KeyboardInput.Utilities
 import Internal.KeyboardInput.Milliseconds
 --import Internal.KeyboardInput.Tokens
@@ -44,11 +45,6 @@ import "spiros" Prelude.Spiros
 
 --------------------------------------------------
 
--- |
-parseKeySequenceIO :: String -> IO ()
-parseKeySequenceIO
-  = T.parseTest pEOFKeySequence
-
 {-| Parse an arbitrary key sequence.
 
 @
@@ -74,6 +70,28 @@ Right (KeySequence [KeyChord { modifiers = [], key = Key "o" },KeyChord { modifi
 -}
 parseKeySequence :: String -> Either String KeySequence
 parseKeySequence = parseKeySequenceWith defaultConfig
+
+--------------------------------------------------
+
+-- | Generalization of 'parseKeySequence'.
+-- 
+-- Generalizes the output from being in the @('Either' _ ...)@ monad
+-- to any @('MonadThrow' m) => m ...@.
+--
+-- (See 'parseKeySequence' for documention).
+parseKeySequenceM
+  :: (MonadThrow m)
+  => String -> m KeySequence
+parseKeySequenceM
+  = parseKeySequence
+  > either throwL return
+
+-- | Convenience function.
+--
+-- (See 'parseKeySequence' for documention).
+parseKeySequenceIO :: String -> IO ()
+parseKeySequenceIO
+  = T.parseTest pEOFKeySequence
 
 --------------------------------------------------
 
@@ -109,7 +127,24 @@ Right (ActionSequence [PressAction (KeyChord { modifiers = [Modifier "C"], key =
 parseActionSequence :: String -> Either String ActionSequence
 parseActionSequence = parseActionSequenceWith defaultConfig
 
--- |
+--------------------------------------------------
+
+-- | Generalization of 'parseActionSequence'.
+-- 
+-- Generalizes the output from being in the @('Either' _ ...)@ monad
+-- to any @('MonadThrow' m) => m ...@.
+--
+-- (See 'parseActionSequence' for documention).
+parseActionSequenceM
+  :: (MonadThrow m)
+  => String -> m ActionSequence
+parseActionSequenceM
+  = parseActionSequence
+  > either throwL return
+
+-- | Convenience function.
+--
+-- (See 'parseActionSequence' for documention).
 parseActionSequenceIO :: String -> IO ()
 parseActionSequenceIO
   = T.parseTest pEOFActionSequence
@@ -361,5 +396,18 @@ pKeySingleCharacter
 
 -- naturalOrDouble :: TokenParsing m => m (Either Integer Double)
 -- This token parser parses either natural or a float. Returns the value of the number. This parsers deals with any overlap in the grammar rules for naturals and floats. 
+
+-- 
+--
+-- throwN
+--   :: (MonadThrow m)
+--   => Name -> String -> m a
+--
+-- throwL
+--   :: (MonadThrow m, HasCallStack)
+--   => String -> m a
+--
+
+--
 
 --------------------------------------------------

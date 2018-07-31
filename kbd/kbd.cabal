@@ -248,6 +248,8 @@ library
  ------------------------------
  exposed-modules:
 
+  KBD
+
   KeyboardInput.Syntax
   KeyboardInput.Syntax.Types
   KeyboardInput.Syntax.Parse
@@ -256,9 +258,13 @@ library
 
  other-modules:
 
+  Prelude.KeyboardInput
+
   Internal.KeyboardInput.Utilities
   Internal.KeyboardInput.Milliseconds
   Internal.KeyboardInput.Tokens
+
+  Internal.Trifecta
 
 -- Paths_kbd
 
@@ -314,7 +320,7 @@ library
    --------------------
    -- (miscellaneous libraries).
    --------------------
---  , 
+  , ansi-wl-pprint
 
 ----------------------------------------
 -- 
