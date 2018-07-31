@@ -248,13 +248,18 @@ library
  ------------------------------
  exposed-modules:
 
-  KBD
-
   KeyboardInput.Syntax
-  KeyboardInput.Syntax.Types
-  KeyboardInput.Syntax.Parse
+
   KeyboardInput.Syntax.Config
   KeyboardInput.Syntax.Create
+
+  KeyboardInput.Syntax.Action.Types
+  KeyboardInput.Syntax.Action.Parse
+
+  KeyboardInput.Syntax.Key.Types
+  KeyboardInput.Syntax.Key.Parse
+
+  KBD
 
  other-modules:
 
@@ -265,6 +270,7 @@ library
   Internal.KeyboardInput.Tokens
 
   Internal.Trifecta
+  Internal.Parsers
 
 -- Paths_kbd
 

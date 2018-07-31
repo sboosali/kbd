@@ -1,6 +1,6 @@
 --------------------------------------------------
 
-{-|
+{-| Extend the @trifecta@ package with some utilities.
 
 -}
 
@@ -10,7 +10,7 @@ module Internal.Trifecta where
 
 import qualified "trifecta"       Text.Trifecta.Result         as T
 
-import qualified "ansi-wl-pprint" Text.PrettyPrint.ANSI.Leijen as P
+--import qualified "ansi-wl-pprint" Text.PrettyPrint.ANSI.Leijen as P
 
 --------------------------------------------------
 
@@ -26,6 +26,7 @@ result2either = T.foldResult (show > Left) Right
 
 
 --------------------------------------------------
+
 
 
 --------------------------------------------------
