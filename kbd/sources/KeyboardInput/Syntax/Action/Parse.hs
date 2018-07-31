@@ -139,6 +139,7 @@ pAction
  <|> P.token (P.try (DelayAction  <$> pDelay))
  <|>          P.try (InsertAction <$> pInsertion)
  <|> P.token (P.try (PressAction  <$> pKeyChord))
+ P.<?> "Action"
 
   -- NOTE:
   -- pKeyChord must precede pDelay, since a single (unitlees) digit represents the corresponding key (e.g. the @1 / !@ key), and a digit is a prefix-string of a number (which is several digits).
@@ -173,6 +174,7 @@ why this truncation? because in the context of user-input-automation, most delay
 
 pDelay :: forall p. TokenParsing p => p Milliseconds
 pDelay = pMilliseconds
+ P.<?> "Duration"
 
  where
  pMilliseconds = (toMilliseconds &flip)
@@ -205,9 +207,10 @@ pTimeUnit
 --
 
 pInsertion :: TokenParsing p => p String
-pInsertion =
-  P.stringLiteral
-  
+pInsertion
+  = P.stringLiteral
+     P.<?> "Double-Quoted String"
+
 -- pInsertion :: TokenParsing p => p String
 -- pInsertion = P.stringLiteral
 

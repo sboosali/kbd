@@ -36,6 +36,7 @@ import qualified "trifecta" Text.Trifecta           as T
 
 import qualified "parsers"  Text.Parser.Combinators as P
 import qualified "parsers"  Text.Parser.Char        as P
+import qualified "parsers"  Text.Parser.Token       as P
 
 import           "parsers"  Text.Parser.Char        (CharParsing)
 import           "parsers"  Text.Parser.Token       (TokenParsing)
@@ -69,7 +70,7 @@ The keys and modifiers may be arbitrary characters or strings:
 KeySequence [KeyChord { modifiers = [Modifier "X",Modifier "Y"], key = Key "z" } ]
 
 >>> parseKeySequenceM "o O <olive> OIL"
-KeySequence [KeyChord { modifiers = [], key = Key "o" },KeyChord { modifiers = [], key = Key "O" },KeyChord { modifiers = [], key = Key "<olive>" },KeyChord { modifiers = [], key = Key " OIL" }]
+KeySequence [KeyChord { modifiers = [], key = Key "o" },KeyChord { modifiers = [], key = Key "O" },KeyChord { modifiers = [], key = Key "olive" },KeyChord { modifiers = [], key = Key "OIL" }]
 
 -}
 parseKeySequence :: String -> Either String KeySequence
@@ -145,6 +146,7 @@ pKeyChord :: CharParsing p => p KeyChord
 pKeyChord = KeyChord
  <$> P.try (pModifier `P.endBy` (P.char '-')) --TODO parameter or signature.
  <*> pKey
+ P.<?> "Key-Chord"
 
 --------------------------------------------------
 
@@ -154,7 +156,8 @@ pKeyChord = KeyChord
 pModifier :: CharParsing p => p Modifier
 pModifier
   = toModifier <$> go --TODO annotate
-
+     P.<?> "Modifier"
+ 
   where
   go = P.upper
 
@@ -166,10 +169,12 @@ pModifier
 pKey :: CharParsing p => p Key
 pKey
   = Key <$> go
+     P.<?> "Key"
 
   where
   go = P.try pKeyBracketedString
    <|> P.try pKeyThreeLetterAbbreviation
+--    <|> P.try pKeyLiteralCharacter
    <|> P.try pKeySingleCharacter
 
 --------------------------------------------------
@@ -224,6 +229,13 @@ pKeySingleCharacter
 
  alphanumerics =
   CharSet.build Char.isAlphaNum
+
+--------------------------------------------------
+
+-- | e.g. @"'x'"@ or @"'\\t'"@.
+pKeyLiteralCharacter :: TokenParsing p => p String
+pKeyLiteralCharacter
+ = char2string <$> P.charLiteral
 
 --------------------------------------------------
 
