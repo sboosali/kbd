@@ -139,14 +139,30 @@ pKeySequence
   where
   go = sepByWhitespace pKeyChord
 
+ -- go = sepByWhitespace pKeyChord
+
 --------------------------------------------------
 
 -- | a 'pKey', optionially preceded by a hyphen-separated list of 'pModifier'.
-pKeyChord :: CharParsing p => p KeyChord
+pKeyChord :: forall p. CharParsing p => p KeyChord
 pKeyChord = KeyChord
- <$> P.try (pModifier `P.endBy` (P.char '-')) --TODO parameter or signature.
+ <$> pOptionalModifiers
  <*> pKey
- P.<?> "Key-Chord"
+  P.<?> "Key-Chord"
+
+ where
+ pOptionalModifiers :: p [Modifier]
+ pOptionalModifiers
+   = pModifier `P.endBy` pSeparator
+
+ pSeparator :: p Char
+ pSeparator
+   = (P.char '-')
+
+ -- pOptionalModifiers
+ --   = pModifier `P.endBy` pSeparator
+
+ -- <$> P.try (pModifier `P.endBy` (P.char '-')) --TODO the hyphen: parameter or signature.
 
 --------------------------------------------------
 
@@ -165,7 +181,18 @@ pModifier
 
 --------------------------------------------------
 
--- | 
+{-|
+
+e.g.:
+
+* @x@
+* @X@
+* @9@
+* @RET@
+* @<return>@
+* @'\n'@
+
+-}
 pKey :: CharParsing p => p Key
 pKey
   = Key <$> go
@@ -179,6 +206,13 @@ pKey
 
 --------------------------------------------------
 
+-- | e.g. @"\<return\>"@
+pKeyBracketedString :: CharParsing p => p String
+pKeyBracketedString
+ = P.between (P.string "<") (P.string ">") pBracketableWord
+
+--------------------------------------------------
+
 -- | e.g. @\"RET\"@
 pKeyThreeLetterAbbreviation :: CharParsing p => p String
 pKeyThreeLetterAbbreviation =
@@ -188,10 +222,24 @@ pKeyThreeLetterAbbreviation =
 
 --------------------------------------------------
 
--- | e.g. @"\<return\>"@
-pKeyBracketedString :: CharParsing p => p String
-pKeyBracketedString
- = P.between (P.string "<") (P.string ">") pBracketableWord
+-- | e.g. @"x"@ or @\"X\"@, or @"1"@.
+pKeySingleCharacter :: CharParsing p => p String
+pKeySingleCharacter
+ = char2string <$> go
+
+ where
+ go =
+   P.oneOfSet alphanumerics
+
+ alphanumerics =
+  CharSet.build Char.isAlphaNum
+
+--------------------------------------------------
+
+-- | e.g. @"'x'"@ or @"'\\t'"@.
+pKeyLiteralCharacter :: TokenParsing p => p String
+pKeyLiteralCharacter
+ = char2string <$> P.charLiteral
 
 --------------------------------------------------
 
@@ -214,28 +262,7 @@ pBracketableWord
   CharSet.build Char.isAlphaNum
 
  separators =
-  CharSet.fromList ("-_/+*")
-
---------------------------------------------------
-
--- | e.g. @"x"@ or @\"X\"@, or @"1"@.
-pKeySingleCharacter :: CharParsing p => p String
-pKeySingleCharacter
- = char2string <$> go
-
- where
- go =
-   P.oneOfSet alphanumerics
-
- alphanumerics =
-  CharSet.build Char.isAlphaNum
-
---------------------------------------------------
-
--- | e.g. @"'x'"@ or @"'\\t'"@.
-pKeyLiteralCharacter :: TokenParsing p => p String
-pKeyLiteralCharacter
- = char2string <$> P.charLiteral
+  CharSet.fromList ("-_/|;:!@#$%^&*+") --TODO steal some syntax for richer token?
 
 --------------------------------------------------
 
