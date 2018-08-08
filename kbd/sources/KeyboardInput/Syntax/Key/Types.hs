@@ -84,21 +84,20 @@ instance IsString Modifier where
 
 --------------------------------------------------
 
-{-|
+-- {-|
 
--}
+-- -}
 
-newtype Key = Key
+-- newtype Key = Key
 
-  String
+--   String
 
+--   deriving stock    (Show,Read,Lift,Generic)
+--   deriving newtype  (Eq,Ord,Semigroup,Monoid,NFData,Hashable)
+--   -- deriving anyclass (IsString)
 
-  deriving stock    (Show,Read,Lift,Generic)
-  deriving newtype  (Eq,Ord,Semigroup,Monoid,NFData,Hashable)
-  -- deriving anyclass (IsString)
-
-instance IsString Key where
-  fromString = coerce
+-- instance IsString Key where
+--   fromString = coerce
 
 --------------------------------------------------
 
@@ -106,19 +105,21 @@ instance IsString Key where
 
 -}
 
-data KeyChar
+data Key
 
-  = PrintableKey   Char    -- ^ e.g. @a@ or @A@
+  = CharacterKey   Char    -- ^ e.g. @a@ or @A@
 
-  | CharacterKey   Char    -- ^ e.g. @'\t'@
+  | QuotedKey      Char    -- ^ e.g. @'\t'@
 
   | NamedKey       String  -- ^ e.g. @<tab>@
 
   | AbbreviatedKey String  -- ^ e.g. @TAB@
 
-  | ASCIIKey       Int     -- ^ e.g. @'\009'@
+  | ModifierKey    String String -- ^ e.g. @dC@ or TODO @C_down@
 
-  | ScanCodeKey    Int     -- ^ e.g. @0x0D@
+  | ASCIIKey       Int     -- ^ e.g. @'\009'@ TODO
+
+  | ScanCodeKey    Int     -- ^ e.g. @0x0D@ TODO
 
   deriving stock    (Eq,Ord,Show,Read,Lift,Generic)
   deriving anyclass (NFData,Hashable)
