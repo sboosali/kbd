@@ -64,6 +64,18 @@ KeySequence [KeyChord { modifiers = [Modifier "C"], key = Key "x" }, KeyChord { 
 
 ==
 
+non-modifier keys may be uppercase:
+
+>>> parseKeySequenceM "C-A"
+KeySequence [KeyChord {modifiers = [Modifier "C"], key = Key "A"}]
+
+which, for consumers\/interpreters of these keybindings, should be equivalent to:
+
+>>> parseKeySequenceM "C-S-a"
+KeySequence [KeyChord {modifiers = [Modifier "C",Modifier "S"], key = Key "a"}]
+
+==
+
 The keys and modifiers may be arbitrary characters or strings:
 
 >>> parseKeySequenceM "X-Y-z"
@@ -170,15 +182,17 @@ pModifier
   = P.try (go <* pSeparator)
  
   where
-  go = toModifier
-    <$> P.upper
-    P.<?> "Modifier"
+  go
+    = toModifier
+     <$> P.upper
+     P.<?> "Modifier"
 
   pSeparator :: p Char
   pSeparator
    = (P.char '-')
 
-  toModifier = char2string > Modifier
+  toModifier
+    = char2string > Modifier
 
   --   = toModifier <$> P.try go --TODO annotate
   --    P.<?> "Modifier"
@@ -203,51 +217,93 @@ e.g.:
 pKey :: TokenParsing p => p Key
 pKey
    = Key <$> go
-     P.<?> "Key"
+   --  NOTE `pKey` gets no label (i.e. `P.<?>`).
+   -- why? to expose each of its alternatives's (i.e. `<|>`) labels.
 
   where
   go = P.try pKeyBracketedString
    <|> P.try pKeyThreeLetterAbbreviation
    <|> P.try pKeyLiteralCharacter
+   <|> P.try pKeyModifier
    <|> P.try pKeySingleCharacter
 
 --------------------------------------------------
 
 -- | e.g. @"\<return\>"@
-pKeyBracketedString :: CharParsing p => p String
+pKeyBracketedString :: TokenParsing p => p String
 pKeyBracketedString
- = P.between (P.string "<") (P.string ">") pBracketableWord
+  = P.token p
+    P.<?> "key name (e.g. <return>)"
+
+  where
+  p = P.between (P.string "<") (P.string ">") pBracketableWord
 
 --------------------------------------------------
 
 -- | e.g. @\"RET\"@
-pKeyThreeLetterAbbreviation :: CharParsing p => p String
-pKeyThreeLetterAbbreviation =
- go <$> P.upper <*> P.upper <*> P.upper
- where
- go x y z = [x,y,z]
+pKeyThreeLetterAbbreviation :: TokenParsing p => p String
+pKeyThreeLetterAbbreviation
+  = P.token p
+    P.<?> "key abbreviation (e.g. RET)"
+
+  where
+  p = go <$> P.upper <*> P.upper <*> P.upper
+  go x y z = [x,y,z]
 
 --------------------------------------------------
 
 -- | e.g. @"x"@ or @\"X\"@, or @"1"@.
-pKeySingleCharacter :: CharParsing p => p String
+pKeySingleCharacter :: TokenParsing p => p String
 pKeySingleCharacter
- = char2string <$> go
+  = P.token p
+    P.<?> "key alphanumeric-character (e.g. x or X or 1)"
 
- where
- go =
-   P.oneOfSet alphanumerics
+  where
+  p =
+    char2string <$> go
 
- alphanumerics =
-  CharSet.build Char.isAlphaNum
+  go =
+    P.oneOfSet alphanumerics
+
+  alphanumerics =
+    CharSet.build Char.isAlphaNum
 
 --------------------------------------------------
 
 -- | e.g. @"'x'"@ or @"'\\t'"@.
 pKeyLiteralCharacter :: TokenParsing p => p String
 pKeyLiteralCharacter
- = char2string <$> P.charLiteral
-  --TODO TokenParsing => CharParsing
+  = p
+    P.<?> "printable character-literal (e.g. '\\n')"
+
+  where
+  p = char2string <$> P.charLiteral
+
+--------------------------------------------------
+
+{- | a direction letter; followed (immediately) by a single, upper-case letter.
+
+e.g.
+
+* @dC@ means: "press down the Control key"; @"d"@ for "down".
+* @uC@ means: "release the Control key"; @"u"@ for "up".
+
+-}
+pKeyModifier :: forall p. TokenParsing p => p String
+pKeyModifier
+  = P.try p
+    P.<?> "pressed-or-released modifier key (e.g. dC or uC; meaning \"control down\" or \"control up\", respectively)"
+
+  where
+  p = go <$> pDirection <*> pKeyModifier_
+
+  go x y = [x,y]
+
+  pDirection
+      = P.char 'd'
+    <|> P.char 'u'
+
+  pKeyModifier_ = P.upper
 
 --------------------------------------------------
 
