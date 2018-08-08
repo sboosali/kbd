@@ -30,3 +30,12 @@ result2either = T.foldResult (show > Left) Right
 
 
 --------------------------------------------------
+{-
+
+P.whiteSpace
+
+P.stringLiteral'
+parses a single-quoted string-literal.
+
+-}
+--------------------------------------------------

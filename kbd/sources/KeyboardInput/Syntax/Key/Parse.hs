@@ -132,32 +132,28 @@ pSealedKeySequence
 --------------------------------------------------
 
 -- | a whitespace-separated list of 'pKeyChord'.
-pKeySequence :: CharParsing p => p KeySequence
+pKeySequence :: TokenParsing p => p KeySequence
 pKeySequence
   = KeySequence <$> go
 
   where
-  go = sepByWhitespace pKeyChord
-
- -- go = sepByWhitespace pKeyChord
+  go = some pKeyChord
 
 --------------------------------------------------
 
 -- | a 'pKey', optionially preceded by a hyphen-separated list of 'pModifier'.
-pKeyChord :: forall p. CharParsing p => p KeyChord
-pKeyChord = KeyChord
- <$> pOptionalModifiers
- <*> pKey
-  P.<?> "Key-Chord"
+pKeyChord :: forall p. TokenParsing p => p KeyChord
+pKeyChord = P.token go
 
  where
+ go = KeyChord
+  <$> pOptionalModifiers
+  <*> pKey
+  P.<?> "Key-Chord"
+
  pOptionalModifiers :: p [Modifier]
  pOptionalModifiers
-   = pModifier `P.endBy` pSeparator
-
- pSeparator :: p Char
- pSeparator
-   = (P.char '-')
+   = many pModifier
 
  -- pOptionalModifiers
  --   = pModifier `P.endBy` pSeparator
@@ -169,15 +165,26 @@ pKeyChord = KeyChord
 -- | a single, upper-case letter.
 --
 -- via 'P.upper'.
-pModifier :: CharParsing p => p Modifier
+pModifier :: forall p. CharParsing p => p Modifier
 pModifier
-  = toModifier <$> go --TODO annotate
-     P.<?> "Modifier"
+  = P.try (go <* pSeparator)
  
   where
-  go = P.upper
+  go = toModifier
+    <$> P.upper
+    P.<?> "Modifier"
+
+  pSeparator :: p Char
+  pSeparator
+   = (P.char '-')
 
   toModifier = char2string > Modifier
+
+  --   = toModifier <$> P.try go --TODO annotate
+  --    P.<?> "Modifier"
+  -- go = P.upper
+  --   <* P.notFollowedBy (P.alphaNum)
+
 
 --------------------------------------------------
 
@@ -193,15 +200,15 @@ e.g.:
 * @'\n'@
 
 -}
-pKey :: CharParsing p => p Key
+pKey :: TokenParsing p => p Key
 pKey
-  = Key <$> go
+   = Key <$> go
      P.<?> "Key"
 
   where
   go = P.try pKeyBracketedString
    <|> P.try pKeyThreeLetterAbbreviation
---    <|> P.try pKeyLiteralCharacter
+   <|> P.try pKeyLiteralCharacter
    <|> P.try pKeySingleCharacter
 
 --------------------------------------------------
@@ -240,6 +247,7 @@ pKeySingleCharacter
 pKeyLiteralCharacter :: TokenParsing p => p String
 pKeyLiteralCharacter
  = char2string <$> P.charLiteral
+  --TODO TokenParsing => CharParsing
 
 --------------------------------------------------
 

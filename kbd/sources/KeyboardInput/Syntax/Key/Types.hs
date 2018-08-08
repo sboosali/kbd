@@ -101,3 +101,29 @@ instance IsString Key where
   fromString = coerce
 
 --------------------------------------------------
+
+{-|
+
+-}
+
+data KeyChar
+
+  = PrintableKey   Char    -- ^ e.g. @a@ or @A@
+
+  | CharacterKey   Char    -- ^ e.g. @'\t'@
+
+  | NamedKey       String  -- ^ e.g. @<tab>@
+
+  | AbbreviatedKey String  -- ^ e.g. @TAB@
+
+  | ASCIIKey       Int     -- ^ e.g. @'\009'@
+
+  | ScanCodeKey    Int     -- ^ e.g. @0x0D@
+
+  deriving stock    (Eq,Ord,Show,Read,Lift,Generic)
+  deriving anyclass (NFData,Hashable)
+  -- deriving anyclass (IsString)
+
+--instance IsString KeyChar where  fromString = coerce
+
+--------------------------------------------------

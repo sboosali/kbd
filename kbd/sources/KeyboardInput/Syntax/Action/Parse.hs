@@ -22,12 +22,12 @@ import Prelude.KeyboardInput
 import Internal.Parsers
 import Internal.Trifecta
 
-import Internal.KeyboardInput.Utilities
+--import Internal.KeyboardInput.Utilities
 import Internal.KeyboardInput.Milliseconds
 
 --------------------------------------------------
 
-import KeyboardInput.Syntax.Key.Types
+--import KeyboardInput.Syntax.Key.Types
 import KeyboardInput.Syntax.Action.Types
 
 import KeyboardInput.Syntax.Key.Parse
@@ -51,7 +51,7 @@ import qualified "charset" Data.CharSet as CharSet
 
 --------------------------------------------------
 
-import qualified "base" Data.Char as Char
+--import qualified "base" Data.Char as Char
 
 --------------------------------------------------
 
