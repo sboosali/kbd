@@ -7,7 +7,6 @@ packages:
 optional-packages:
 
  ../spiros/
-
  ../enumerate/enumerate
  ../enumerate/enumerate-function
 

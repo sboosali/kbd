@@ -41,13 +41,11 @@ tested-with:
 -- (EXTRA) FILES
 ----------------------------------------
 
-data-files:
-  data/*.txt
+-- data-files:
+--   data/*.txt
 
 extra-source-files:
  LICENSE.txt
- .gitignore
- Makefile
 
 ----------------------------------------
 -- REPOSITORY
@@ -85,65 +83,6 @@ common haskell2020
 
  ------------------------------
  ------------------------------
- ghc-options:
-
-  --------------------
-  -- warning groups
-  --------------------
-
-  -Wall
-
-  --------------------
-  -- disabled warnings
-  --------------------
-
-  -Wno-unticked-promoted-constructors
-
-  --------------------
-  -- enabled warnings
-  --------------------
-
-  -- enable
-  -Wincomplete-uni-patterns
-  -Wincomplete-record-updates
-  -Widentities
-  -Wmissing-methods
-  -fwarn-tabs
- 
-  --------------------
-  -- typed-holes
-  --------------------
-
-  -- use `typed-holes`, not `undefined`, during development
-
-  -fdefer-typed-holes
-  -Wtyped-holes
-
-  --------------------
-  -- (miscellaneous warnings)
-  --------------------
-
-  -- raise a warning into an error
-  -- -Werror=missing-fields
-
- if impl(ghc >= 8.0)
-    ghc-options:
-
-        --------------------
-        -- warning groups
-        --------------------     
-
-        -Wcompat
-      
-        --------------------
-        -- enabled warnings
-        --------------------
-
-        -Wnoncanonical-monad-instances
-        -Wnoncanonical-monadfail-instances
-
- ------------------------------
- ------------------------------
 
  default-extensions:
 
@@ -151,9 +90,10 @@ common haskell2020
    -- "controversial"
    --------------------
    NoImplicitPrelude
-
+   -- NOTE thus every module implicitly has -XNoImplicitPrelude
+   
    --------------------
-   -- `deriving`
+   -- deriving
    --------------------
    AutoDeriveTypeable
    DeriveDataTypeable
@@ -163,10 +103,9 @@ common haskell2020
    DeriveTraversable
    DeriveLift
    StandaloneDeriving
-
    DerivingStrategies
-   DeriveAnyClass
    GeneralizedNewtypeDeriving
+   DeriveAnyClass
 
    --------------------
    -- syntax
@@ -202,7 +141,7 @@ common haskell2020
    PatternSynonyms
 
    --------------------
-   -- (miscellaneous)
+   -- (miscellaneous extensions)
    --------------------
    ScopedTypeVariables
 
@@ -221,13 +160,12 @@ common haskell2020
    OverloadedLists
 
    --------------------
-   -- (miscellaneous)
+   -- (miscellaneous extensions)
    --------------------
-
    -- RebindableSyntax
-   -- kinds:
+   -- kinds
    -- DataKinds ConstraintKinds
-   -- harmful to inference:
+   -- harmful to inference
    -- GADTs RankNTypes
    -- (miscellaneous)
 
@@ -259,6 +197,9 @@ library
   KeyboardInput.Syntax.Key.Types
   KeyboardInput.Syntax.Key.Parse
 
+  KeyboardInput.Syntax.Types
+  KeyboardInput.Syntax.Parse
+                 
   KBD
 
  other-modules:

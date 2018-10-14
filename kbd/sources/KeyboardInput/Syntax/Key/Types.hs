@@ -123,7 +123,6 @@ data Key
 
   deriving stock    (Eq,Ord,Show,Read,Lift,Generic)
   deriving anyclass (NFData,Hashable)
-  -- deriving anyclass (IsString)
 
 --instance IsString KeyChar where  fromString = coerce
 

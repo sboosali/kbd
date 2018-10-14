@@ -233,7 +233,7 @@ pKey
    <|> P.try pKeyLiteralCharacter
    <|> P.try pKeyModifier
    <|> P.try pKeySingleCharacter
-    --TODO fewer trys
+    --TODO fewer try's, use notFollowedBy
 
 --------------------------------------------------
 
