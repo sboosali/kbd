@@ -6,7 +6,7 @@ packages:
 ----------------------------------------
 optional-packages:
 
- ../spiros/
+ ../spiros/spiros
  ../enumerate/enumerate
  ../enumerate/enumerate-function
 
